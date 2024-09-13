@@ -94,10 +94,12 @@ void decimalToBinary(int decimal) {
         //now find Two's complement
         for(int i = 31; i>=0; i--)
         {
+            //if first(and consecutive i-1) bit is 1, flip it
             if(binary[i] == '1') 
             {
                 binary[i] = '0';
             } else {
+                //if bit is 0, flip it and break
                 binary[i] = '1';
                 break;
             }
