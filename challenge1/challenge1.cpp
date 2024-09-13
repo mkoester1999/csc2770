@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
 void decimalToBinary(int decimal) {
     printf("Converting decimal %d to binary...\n", decimal);
     // Conversion logic will go here
-    //create 33-bit char array to represent the binary number. int is 32 bits and we Will need an extra bit for terminating character
+    //create 33-bit char array to represent the binary number. int is 32 bits and we will need an extra bit for terminating character
     char binary[33];
 
     if (decimal == 0) {
@@ -78,9 +78,8 @@ void decimalToBinary(int decimal) {
         //cast decimal to uint to get the absolute value
         //multiply decimal by -1 to get the absolute value
          decimal = decimal * -1;
-         //add 1 for 2's complement
-         decimal +=1;
-        //for loop to do integer division and get moduli. Starting at position 31 and working backwards
+         
+        //for loop to do integer division and get 1's complement. Starting at position 31 and working backwards
         for(int i = 31; i>=0; i--) {
            //handle 2's complement by flipping all the bits 
             int tempInt = decimal % 2;
@@ -91,8 +90,18 @@ void decimalToBinary(int decimal) {
             }
             decimal = decimal / 2;
         }
-        //the first bit to sign
-        binary[0] = '1';
+        
+        //now find Two's complement
+        for(int i = 31; i>=0; i--)
+        {
+            if(binary[i] == '1') 
+            {
+                binary[i] = '0';
+            } else {
+                binary[i] = '1';
+                break;
+            }
+        }
     }
     //set terminating character
     binary[32] = '\0';
