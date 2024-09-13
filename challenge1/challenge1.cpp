@@ -1,0 +1,129 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Function prototypes
+void decimalToBinary(int decimal);
+void decimalToHex(int decimal);
+void binaryToDecimal(char *binary);
+void hexToDecimal(char *hex);
+
+// Main function to handle inputs and trigger conversions
+int main(int argc, char *argv[]) {
+    // Ensure correct number of arguments are provided
+    if (argc != 3) {
+        printf("Usage: %s -[d|b|h] [number]\n", argv[0]);
+        printf("Options:\n");
+        printf("-d [decimal]     Convert decimal to binary and hexadecimal\n");
+        printf("-b [binary]      Convert binary to decimal and hexadecimal\n");
+        printf("-h [hexadecimal] Convert hexadecimal to decimal and binary\n");
+        return 1;
+    }
+
+    // Extract the flag and value from arguments
+    //grab just the letter without the hyphen
+    char flag = argv[1][1];
+    //set value to the third argument
+    char *value = argv[2];
+    // Check which flag was provided and call the appropriate function
+    switch(flag)
+    {
+        case 'd':
+        {
+            int decimal = atoi(value);
+            decimalToBinary(decimal);
+            decimalToHex(decimal);
+        }
+            break;
+
+        case 'b':
+            binaryToDecimal(value);
+            break;
+
+        case 'h':
+            hexToDecimal(value);
+            break;
+
+        default:
+            printf("Invalid flag: %c\n", flag);
+
+    }
+
+    return 0;
+}
+
+// Function to convert decimal to binary (placeholder)
+void decimalToBinary(int decimal) {
+    printf("Converting decimal %d to binary...\n", decimal);
+    // Conversion logic will go here
+    //create 33-bit char array to represent the binary number. int is 32 bits and we Will need an extra bit for terminating character
+    char binary[33];
+
+    if (decimal == 0) {
+        binary[0] = '0';
+    }
+    //handle positive integers
+    else if (decimal > 0) 
+    {
+        //for loop to do integer division and get moduli. Starting at position 31 and working backwards
+        for(int i = 31; i>=0; i--) {
+            //set the current position to the remainder of the decimal divided by 2. Use +'0' to convert to char
+            binary[i] = decimal % 2 + '0';
+            decimal = decimal / 2;
+        }
+    }
+    //handle negative integers
+    else
+    {
+        //cast decimal to uint to get the absolute value
+        //multiply decimal by -1 to get the absolute value
+         decimal = decimal * -1;
+         //add 1 for 2's complement
+         decimal +=1;
+        //for loop to do integer division and get moduli. Starting at position 31 and working backwards
+        for(int i = 31; i>=0; i--) {
+           //handle 2's complement by flipping all the bits 
+            int tempInt = decimal % 2;
+            if(tempInt == 0) {
+                binary[i] = '1';
+            } else {
+                binary[i] = '0';
+            }
+            decimal = decimal / 2;
+        }
+        //the first bit to sign
+        binary[0] = '1';
+    }
+    //set terminating character
+    binary[32] = '\0';
+    printf("Binary: %s\n", binary);
+
+}
+
+// Function to convert decimal to hexadecimal (placeholder)
+void decimalToHex(int decimal) {
+    printf("Converting decimal %d to hexadecimal...\n", decimal);
+    // Conversion logic will go here
+    //Do we need to do anything when it already is converted with the %X option?
+    printf("Hexadecimal: %X\n", decimal);
+    
+}
+
+// Function to convert binary to decimal (placeholder)
+void binaryToDecimal(char *binary) {
+    printf("Converting binary %s to decimal...\n", binary);
+    // Conversion logic will go here
+    int decimal;
+    printf("Decimal: %d\n", decimal);
+
+}
+
+// Function to convert hexadecimal to decimal (placeholder)
+void hexToDecimal(char *hex) {
+    printf("Converting hexadecimal %s to decimal...\n", hex);
+    // Conversion logic will go here
+    int decimal;
+    printf("Decimal: %d\n", decimal);
+
+}
+
