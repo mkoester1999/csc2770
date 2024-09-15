@@ -1,3 +1,4 @@
+#include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -49,7 +50,6 @@ void decimalToBinary(int decimal) {
     //handle negative integers
     else
     {
-        //cast decimal to uint to get the absolute value
         //multiply decimal by -1 to get the absolute value
          decimal = decimal * -1;
          
@@ -104,7 +104,11 @@ void decimalToHex(int decimal) {
     //create new char array to store 32-bit hex + terminating character
     char *hex = new char[9];
     int i = 0;
-
+    if(decimal == 0)
+    {
+        hex[0] = '0';
+        i = 1;
+    }
     //handle positive integers
     while (decimal > 0)
     {
@@ -116,8 +120,8 @@ void decimalToHex(int decimal) {
     //handle negative integers
     if(decimal <0)
     {
-        //call decimalToBinary
-        decimalToBinary(decimal);
+        //convert decimal to binary using 2's complement
+        //convert back to hexadecimal
     }
     //set terminating character
     hex[i+1] = '\0';
@@ -130,7 +134,26 @@ void decimalToHex(int decimal) {
 void binaryToDecimal(char *binary) {
     printf("Converting binary %s to decimal...\n", binary);
     // Conversion logic will go here
-    int decimal;
+    int decimal = 0;
+    //get length of binary string
+    int length = 0;
+    while (binary[length] != '\0')
+    {
+        length++;
+    }
+
+    //handle bit to decimal conversion skipping the sign bit
+    for (int i = 1; i < length; ++i)
+    {
+        decimal = decimal * 2 + (binary[i] - '0');
+    }
+    
+   //if sign bit is 1, subtract 2^length-1. Need -1 to ignore the terminating character 
+    if (binary[0] == '1')
+    {
+        decimal -= pow(2, length-1);
+    }
+
     printf("Decimal: %d\n", decimal);
 
 }
@@ -192,7 +215,7 @@ int main(int argc, char *argv[]) {
     {
         case 'd':
         {
-            int decimal = atoi(value);
+            int decimal = atoi(value); //atoi can't handle overflows, so may need to think of a different strategy. Maybe use strtol instead.
             decimalToBinary(decimal);
             decimalToHex(decimal);
         }
@@ -201,10 +224,12 @@ int main(int argc, char *argv[]) {
         case 'b':
 
             binaryToDecimal(value);
+            binaryToHex(value);
             break;
 
         case 'h':
             hexToDecimal(value);
+            hexToBinary(value);
             break;
 
         default:
