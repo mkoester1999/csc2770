@@ -6,7 +6,7 @@
     "request": "launch",
     "name": "Launch",
     "program": "${workspaceFolder}/build/Debug/outDebug",
-    "args": ["-d", "100"],
+    "args": ["-d", "-8"],
     "cwd": "${workspaceFolder}"
   },
     {
