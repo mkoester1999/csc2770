@@ -1,4 +1,3 @@
-#include <cmath>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +13,7 @@ char *decimalToBinaryHelper(int decimal);
 char *decimalToHexHelper(int decimal);
 int binaryToDecimalHelper(char *binary);
 char *binaryToHexHelper(char *binary);
+int hexToDecimalHelper(char *hex);
 
 // Function to print the hexadecimal number in reverse order
 void printHexInReverse(char hex[], int length) {
@@ -101,8 +101,6 @@ char *decimalToBinaryHelper(int decimal)
 void decimalToBinary(int decimal) {
     printf("Converting decimal %d to binary...\n", decimal);
     // Conversion logic will go here
-    //create 33-bit char array to represent the binary number. int is 32 bits and we will need an extra bit for terminating character
-
     char *binary = decimalToBinaryHelper(decimal);
     printf("Binary: %s\n", binary);
     delete[] binary;
@@ -166,7 +164,6 @@ void decimalToHex(int decimal) {
 // Helper function to convert binary to decimal
 int binaryToDecimalHelper(char *binary)
 {
-
     int decimal = 0;
     //get length of binary string
     int length = strlen(binary);
@@ -180,14 +177,22 @@ int binaryToDecimalHelper(char *binary)
    //if sign bit is 1, subtract 2^length-1. Need -1 to ignore the terminating character 
     if (binary[0] == '1')
     {
-        decimal -= pow(2, length-1);
+        decimal = decimal << (length-1);
     }
     return decimal;
 }
-// Function to convert binary to decimal (placeholder)
+//binaryToDecimal Function
+//Takes binary cstring and converts into an integer
+
 void binaryToDecimal(char *binary) {
     printf("Converting binary %s to decimal...\n", binary);
     // Conversion logic will go here
+    //handle overflow
+    if(strlen(binary) > 32)
+    {
+        printf("Overflow!\n");
+        return;
+    }
     int decimal = binaryToDecimalHelper(binary);
     printf("Decimal: %d\n", decimal);
 
@@ -215,6 +220,10 @@ void binaryToHex(char *binary) {
     printHexInReverse(hex, i);
 }
 
+// Helper function to convert hexadecimal char to integer
+//takes a hex character and returns its integer equivalent. Returns -1 if invalid
+//parameters: char hexChar
+//returns: int
 int hexChartoInt(char hexChar)
 {
     //handle 0-9 hex characters (just decimal)
@@ -238,26 +247,43 @@ int hexChartoInt(char hexChar)
         return -1;
     }
 }
-// Function to convert hexadecimal to decimal (placeholder)
-void hexToDecimal(char *hex) {
-    printf("Converting hexadecimal %s to decimal...\n", hex);
-    // Conversion logic will go here
-    if (hex == nullptr || strlen(hex) == 0) {
-        printf("Invalid hexadecimal input.\n");
-        return;
-    }
-    int decimal;
-    int i = 0;
+// Helper function to convert hexadecimal to decimal
+//will take a hex cstring and convert into an integer
+//parameters: char* hex
+//returns: int
+int hexToDecimalHelper(char *hex)
+{
+    int decimal = 0;
     //loop through hex string until reaching the terminating character
-    while (hex[i] != '\0')
+    while (*hex != '\0')
     {
         //convert hex char to integer
         int hexChar = hexChartoInt(*hex);
+        if (hexChar == -1)
+        {
+            printf("Invalid hexadecimal input.\n");
+            return -1;
+        }
         //multiply decimal by 16
         decimal = decimal * 16 + hexChar;
         //increment hex
-        i++;
+        hex++;
     }
+    return decimal;
+}
+// Function to convert hexadecimal to decimal
+//Will take a hex cstring and convert into an integer
+//parameters: char* hex
+//returns: void
+void hexToDecimal(char *hex) {
+    printf("Converting hexadecimal %s to decimal...\n", hex);
+    // Conversion logic will go here
+    //check for invalid input or buffer overflow
+    if ((hex == nullptr || strlen(hex) == 0) || (strlen(hex) > 8)) {
+        printf("Invalid hexadecimal input.\n");
+        return;
+    }
+    int decimal = hexToDecimalHelper(hex);
     printf("Decimal: %d\n", decimal);
 
 }
@@ -266,7 +292,10 @@ void hexToDecimal(char *hex) {
 void hexToBinary(char *hex) {
     printf("Converting hexadecimal %s to binary...\n", hex);
     // Conversion logic will go here
-    char binary[33];
+    //convert hex to decimal
+    int decimal = hexToDecimalHelper(hex);
+    //convert decimal to binary
+    char *binary = decimalToBinaryHelper(decimal);
     printf("Binary: %s\n", binary);
 
 }
