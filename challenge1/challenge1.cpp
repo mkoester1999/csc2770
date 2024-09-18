@@ -1,3 +1,8 @@
+/*Mitchell Koester
+CSC2770 Challenge 1
+Last modified: 9/15/2024
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -97,7 +102,10 @@ char *decimalToBinaryHelper(int decimal)
     return binary;
 }
 
-// Function to convert decimal to binary (placeholder)
+//decimalToBinary function
+//takes an integer and prints it in binary
+//parameters: int decimal
+//returns: void
 void decimalToBinary(int decimal) {
     printf("Converting decimal %d to binary...\n", decimal);
     // Conversion logic will go here
@@ -106,6 +114,10 @@ void decimalToBinary(int decimal) {
     delete[] binary;
 }
 
+//decimalToHexHelper function
+//takes an integer and converts it to a 32-bit hex string
+//parameters: int decimal
+//returns: char*
 char *decimalToHexHelper(int decimal)
 {
     const char hexChars[] = "0123456789ABCDEF";
@@ -149,7 +161,10 @@ char *decimalToHexHelper(int decimal)
 
 }
 
-// Function to convert decimal to hexadecimal (placeholder)
+//decimalToHex function
+//converts a decimal to hexadecimal
+//parameters: int decimal
+//returns: void
 void decimalToHex(int decimal) {
     printf("Converting decimal %d to hexadecimal...\n", decimal);
     // Conversion logic will go here
@@ -161,29 +176,45 @@ void decimalToHex(int decimal) {
     delete[] hex;
 }
 
-// Helper function to convert binary to decimal
+//binaryToDecimalHelper Function
+//Takes binary cstring and converts into an integer
+//parameters: char* binary
+//returns: int
 int binaryToDecimalHelper(char *binary)
 {
     int decimal = 0;
     //get length of binary string
     int length = strlen(binary);
 
+    //handle invalid sign
+    if(binary[0] != '0' && binary[0] != '1')
+    {
+        printf("Invalid binary number %c!\n", binary[0]);
+        exit(1);
+    }
+
     //handle bit to decimal conversion skipping the sign bit
     for (int i = 1; i < length; ++i)
     {
+        if(binary[i] < '0' || binary[i] > '1')
+        {
+            printf("Invalid binary number %c!\n", binary[i]);
+            exit(1);
+        }
         decimal = decimal * 2 + (binary[i] - '0');
     }
    // Calculate two's complement
-   //if sign bit is 1, subtract 2^length-1. Need -1 to ignore the terminating character 
+   //if sign bit is 1, subtract length -1 shifted left from decimal 
     if (binary[0] == '1')
     {
-        decimal = decimal << (length-1);
+        decimal = decimal - (1 << (length-1));
     }
     return decimal;
 }
 //binaryToDecimal Function
 //Takes binary cstring and converts into an integer
-
+//parameters: char* binary
+//returns: void
 void binaryToDecimal(char *binary) {
     printf("Converting binary %s to decimal...\n", binary);
     // Conversion logic will go here
@@ -198,8 +229,10 @@ void binaryToDecimal(char *binary) {
 
 }
 
-
-// Helper function to convert binary to hexadecimal
+//binaryToHexHelper function
+//takes a binary cstring and returns a converted hex cstring
+//parameters: char* binary
+//returns: char*
 char *binaryToHexHelper(char *binary) 
 {
     //convert binary to decimal first
@@ -209,18 +242,29 @@ char *binaryToHexHelper(char *binary)
     return hex;
 }
 
-// Function to convert binary to hexadecimal (placeholder)
-void binaryToHex(char *binary) {
+//binaryToHex Function
+//Takes binary cstring and converts into a hex cstring
+//parameters: char* binary
+//returns: void
+void binaryToHex(char *binary) 
+{
     printf("Converting binary %s to hexadecimal...\n", binary);
     // Conversion logic will go here
+    //handle overflow
+    if(strlen(binary) > 32)
+    {
+        printf("Overflow!\n");
+        return;
+    }
     //create hex cstring to store 32-bit hex + terminating character
     char *hex = binaryToHexHelper(binary);
     int i = strlen(hex);
     // Call the function to print the hexadecimal number in reverse order
     printHexInReverse(hex, i);
+    delete[] hex;
 }
 
-// Helper function to convert hexadecimal char to integer
+//Helper function to convert hexadecimal char to integer
 //takes a hex character and returns its integer equivalent. Returns -1 if invalid
 //parameters: char hexChar
 //returns: int
@@ -247,7 +291,7 @@ int hexChartoInt(char hexChar)
         return -1;
     }
 }
-// Helper function to convert hexadecimal to decimal
+//hexToDecimalHelper function
 //will take a hex cstring and convert into an integer
 //parameters: char* hex
 //returns: int
@@ -271,7 +315,7 @@ int hexToDecimalHelper(char *hex)
     }
     return decimal;
 }
-// Function to convert hexadecimal to decimal
+//hexToDecimal function
 //Will take a hex cstring and convert into an integer
 //parameters: char* hex
 //returns: void
@@ -288,7 +332,10 @@ void hexToDecimal(char *hex) {
 
 }
 
-// Function to convert hexadecimal to binary (placeholder)
+//hexToBinary function
+//Takes a hex cstring and converts into a binary cstring
+//parameters: char* hex
+//returns: void
 void hexToBinary(char *hex) {
     printf("Converting hexadecimal %s to binary...\n", hex);
     // Conversion logic will go here
@@ -297,9 +344,9 @@ void hexToBinary(char *hex) {
     //convert decimal to binary
     char *binary = decimalToBinaryHelper(decimal);
     printf("Binary: %s\n", binary);
+    delete[] binary;
 
 }
-
 
 
 // Main function to handle inputs and trigger conversions
@@ -322,13 +369,26 @@ int main(int argc, char *argv[]) {
     char flag = argv[1][1];
     //set value to the third argument
     char *value = argv[2];
-    printf("Value: %s\n", value);
+
+    //check if value is valid
+    if(value == nullptr || *value == '\0')
+    {
+        print: printf("Invalid value\n");
+        return 1;
+    }
     // Check which flag was provided and call the appropriate function
     switch(flag)
     {
         case 'd':
         {
             int decimal = atoi(value); //atoi can't handle overflows, so may need to think of a different strategy. Maybe use strtol instead.
+
+            //check for overflow, which will happen when value isn't -1, but decimal is
+            if(decimal == -1 && (strcmp(value, "-1") != 0) || decimal == 0 && (strcmp(value, "0") != 0))
+            {
+                printf("Invalid input\n");
+                return 1;
+            }
             decimalToBinary(decimal);
             decimalToHex(decimal);
         }
@@ -349,7 +409,7 @@ int main(int argc, char *argv[]) {
             printf("Invalid flag: %c\n", flag);
 
     }
-
+    //delete[] value;
     return 0;
 }
 
